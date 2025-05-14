@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const authRoutes = require("./src/controllers/auth.controller");
 const adminRoutes = require("./src/controllers/admin.controller");
+const customerRoutes = require("./src/controllers/customer.controller");
 const cors = require("cors");
 require("dotenv").config();
 const {
@@ -15,13 +16,18 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use("/auth", authRoutes);
-app.use("/admin", authenticateJWT, authorizeRoles("distributor"), adminRoutes);
-
 // Sample route
 app.get("/", (req, res) => {
   res.send("Hello, world! Express is running.");
 });
+app.use("/auth", authRoutes);
+app.use("/admin", authenticateJWT, authorizeRoles("distributor"), adminRoutes);
+app.use(
+  "/customer",
+  authenticateJWT,
+  authorizeRoles("distributor"),
+  customerRoutes
+);
 
 // Start server
 app.listen(PORT, () => {

@@ -2,6 +2,7 @@ const { Readable } = require("stream");
 const csv = require("csv-parser");
 const bcrypt = require("bcrypt");
 const pool = require("../config/db");
+const { sendWelcomeEmail } = require("../config/email");
 
 async function handleDistributorCSVBuffer(buffer) {
   const distributors = [];
@@ -43,7 +44,16 @@ async function handleDistributorCSVBuffer(buffer) {
               "INSERT INTO distributer (name, email, password) VALUES ($1, $2, $3)",
               [distributor.name, distributor.email, hashedPassword]
             );
+            console.log(distributor.email);
+            console.log(distributor.name);
             console.log("plain password", plainPassword);
+            console.log("hello inserted");
+            //send mail to distributor
+            await sendWelcomeEmail(
+              distributor.email,
+              distributor.name,
+              plainPassword
+            );
 
             inserted.push({
               name: distributor.name,
