@@ -1,6 +1,10 @@
 const express = require("express");
 const multer = require("multer");
 const { handleDistributorCSVBuffer } = require("../services/admin.service");
+const {
+  authenticateJWT,
+  authorizeRoles,
+} = require("../middlewares/auth.middlewares");
 
 const router = express.Router();
 
@@ -10,6 +14,8 @@ const upload = multer({ storage });
 
 router.post(
   "/upload-distributors",
+  authenticateJWT,
+  authorizeRoles("admin"),
   upload.single("file"), // Expect field name as 'file'
   async (req, res) => {
     try {

@@ -21,13 +21,8 @@ app.get("/", (req, res) => {
   res.send("Hello, world! Express is running.");
 });
 app.use("/auth", authRoutes);
-app.use("/admin", authenticateJWT, authorizeRoles("distributor"), adminRoutes);
-app.use(
-  "/customer",
-  authenticateJWT,
-  authorizeRoles("distributor"),
-  customerRoutes
-);
+app.use("/admin", adminRoutes);
+app.use("/customer", customerRoutes);
 
 // Start server
 app.listen(PORT, () => {

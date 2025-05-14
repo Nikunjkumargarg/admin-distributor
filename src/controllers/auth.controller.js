@@ -1,5 +1,5 @@
 const express = require("express");
-const { loginService } = require("../services/auth.service")
+const { loginService } = require("../services/auth.service");
 
 const router = express.Router();
 
@@ -8,6 +8,7 @@ router.post("/login", async (req, res) => {
 
   try {
     const result = await loginService(email, password);
+    console.log("result", result);
     res.json(result);
   } catch (err) {
     if (err.message === "Invalid email or password") {

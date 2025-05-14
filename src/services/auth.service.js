@@ -42,7 +42,7 @@ async function loginService(email, password) {
     { expiresIn: "7d" }
   );
 
-  return { token };
+  return { token, role };
 }
 
 module.exports = {

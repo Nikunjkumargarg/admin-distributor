@@ -26,4 +26,11 @@ router.post(
   customerService.createCustomer
 );
 
+router.get(
+  "/list",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  customerService.customerslist
+);
+
 module.exports = router;

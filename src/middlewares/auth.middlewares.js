@@ -22,6 +22,10 @@ function authenticateJWT(req, res, next) {
 
 function authorizeRoles(...allowedRoles) {
   return (req, res, next) => {
+    console.log("allowedRoles", allowedRoles);
+    console.log("userrole", req.user.role);
+    const boolValue = allowedRoles.includes(req.user.role);
+    console.log("boolValue", boolValue);
     if (!allowedRoles.includes(req.user.role)) {
       return res.status(403).json({ message: "Access denied" });
     }
