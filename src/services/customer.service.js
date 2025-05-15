@@ -73,7 +73,7 @@ exports.verifyOtp = async (req, res) => {
 exports.createCustomer = async (req, res) => {
   try {
     const { name, mobile_number } = req.body;
-    const distributorEmail = req.user.email;
+    const distributorMobileNumber = req.user.mobile;
 
     const otpCheck = await db.query(
       `SELECT * FROM otp_verification WHERE mobile_number = $1 AND verified = true`,
@@ -92,8 +92,8 @@ exports.createCustomer = async (req, res) => {
     }
 
     const distributor = await db.query(
-      `SELECT id FROM distributer WHERE email = $1`,
-      [distributorEmail]
+      `SELECT id FROM distributer WHERE mobile_number = $1`,
+      [distributorMobileNumber]
     );
     const distributorId = distributor.rows[0]?.id;
 
