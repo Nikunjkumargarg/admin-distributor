@@ -1,9 +1,11 @@
 const express = require("express");
 const { loginService } = require("../services/auth.service");
+const { verifyOtp } = require("../services/auth.service");
+const customerService = require("../services/customer.service");
 
 const router = express.Router();
 
-router.post("/login", async (req, res) => {
+router.post("/admin/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -18,5 +20,9 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+router.post("/distributor/send-otp", customerService.sendOtp);
+
+router.post("/distributor/verify-otp", verifyOtp);
 
 module.exports = router;

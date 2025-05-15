@@ -12,20 +12,16 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendWelcomeEmail = async (toEmail, name, password) => {
+const sendWelcomeEmail = async (mobileNumber) => {
   const mailOptions = {
     from: process.env.FROM_EMAIL,
     to: toEmail,
     subject: "Welcome to Our Platform",
     html: `
-      <p>Dear ${name},</p>
+      <p>Dear ${Distributor},</p>
       <p>You have been added as a distributor to our platform.</p>
-      <p>Your login credentials:</p>
-      <ul>
-        <li><strong>Email:</strong> ${toEmail}</li>
-        <li><strong>Password:</strong> ${password}</li>
-      </ul>
-      <p>Please log in and change your password.</p>
+      <p>You can login with your registered number via otp: ${mobileNumber}</p>
+      <p>Please log in</p>
       <p>Best regards,<br/>Team</p>
     `,
   };

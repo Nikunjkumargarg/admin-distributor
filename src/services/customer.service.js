@@ -122,11 +122,12 @@ exports.createCustomer = async (req, res) => {
 exports.customerslist = async (req, res) => {
   try {
     const query = `
-      SELECT c.id AS customer_id, c.name AS customer_name, d.name AS distributor_name
-      FROM customer c
-      JOIN sale s ON c.id = s.customer_id
-      JOIN distributer d ON s.distributor_id = d.id
-      GROUP BY c.id, d.id;
+      SELECT 
+  c.mobile_number AS customer_mobile,
+  d.mobile_number AS distributor_mobile
+FROM customer c
+JOIN sale s ON c.id = s.customer_id
+JOIN distributer d ON s.distributor_id = d.id;
     `;
 
     const result = await await db.query(query); // 'pool.query()' executes the SQL query

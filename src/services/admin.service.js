@@ -13,10 +13,17 @@ async function handleDistributorCSVBuffer(buffer) {
     stream
       .pipe(csv())
       .on("data", (row) => {
-        if (row.name && row.email) {
+        let mobile = row.mobile_number?.trim();
+        const quantity = row.quantity_alloted?.trim();
+
+        if (mobile && quantity) {
+          if (/^\d{10}$/.test(mobile)) {
+            mobile = `+91${mobile}`;
+          }
+
           distributors.push({
-            name: row.name.trim(),
-            email: row.email.trim(),
+            mobile_number: mobile,
+            quantity_alloted: parseInt(quantity, 10),
           });
         }
       })
@@ -27,38 +34,28 @@ async function handleDistributorCSVBuffer(buffer) {
           for (const distributor of distributors) {
             // Check if email already exists
             const existing = await pool.query(
-              "SELECT id FROM distributer WHERE email = $1",
-              [distributor.email]
+              "SELECT id FROM distributer WHERE mobile_number = $1",
+              [distributor.mobile_number]
             );
 
             if (existing.rows.length > 0) {
               continue; // Skip if email already exists
             }
 
-            // Generate password
-            const plainPassword = Math.random().toString(36).slice(-8);
-            const hashedPassword = await bcrypt.hash(plainPassword, 10);
-
             // Insert into DB
             await pool.query(
-              "INSERT INTO distributer (name, email, password) VALUES ($1, $2, $3)",
-              [distributor.name, distributor.email, hashedPassword]
+              "INSERT INTO distributer (mobile_number, quantity_alloted) VALUES ($1, $2)",
+              [distributor.mobile_number, distributor.quantity_alloted]
             );
-            console.log(distributor.email);
-            console.log(distributor.name);
-            console.log("plain password", plainPassword);
+            console.log(distributor.mobile_number);
+            console.log(distributor.quantity_alloted);
             console.log("hello inserted");
             //send mail to distributor
-            await sendWelcomeEmail(
-              distributor.email,
-              distributor.name,
-              plainPassword
-            );
+            //await sendWelcomeEmail(distributor.mobile_number);
 
             inserted.push({
-              name: distributor.name,
-              email: distributor.email,
-              password: plainPassword,
+              mobile_number: distributor.mobile_number,
+              quantity: distributor.quantity_alloted,
             });
           }
 
