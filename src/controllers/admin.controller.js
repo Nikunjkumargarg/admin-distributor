@@ -1,6 +1,12 @@
 const express = require("express");
 const multer = require("multer");
-const { handleDistributorCSVBuffer } = require("../services/admin.service");
+const {
+  handleDistributorCSVBuffer,
+  createDistributor,
+  downloadDistributors,
+  downloadRecipients,
+  getAllDistributorsSummary,
+} = require("../services/admin.service");
 const {
   authenticateJWT,
   authorizeRoles,
@@ -31,6 +37,82 @@ router.post(
     } catch (err) {
       console.error("CSV Upload Error:", err);
       res.status(500).json({ message: "Internal server error" });
+    }
+  }
+);
+
+router.post(
+  "/create-distributor",
+  authenticateJWT,
+  authorizeRoles("admin"),
+  async (req, res) => {
+    try {
+      const result = await createDistributor(req.body);
+      res.json(result);
+    } catch (err) {
+      console.error("Create Distributor Error:", err);
+      const status = err.status || 500;
+      res
+        .status(status)
+        .json({ message: err.message || "Internal server error" });
+    }
+  }
+);
+
+router.get(
+  "/distributors-summary",
+  //authenticateJWT,
+  //authorizeRoles("admin"),
+  async (req, res) => {
+    try {
+      const result = await getAllDistributorsSummary();
+      res.json(result);
+    } catch (err) {
+      console.log("Error: ", err);
+      const status = err.status || 500;
+      res
+        .status(status)
+        .json({ message: err.message || "Internal server error" });
+    }
+  }
+);
+
+router.get(
+  "/download-distributors",
+  //authenticateJWT,
+  //authorizeRoles("admin"),
+  async (req, res) => {
+    try {
+      const result = await downloadDistributors(req.body);
+      res.header("Content-Type", "text/csv");
+      res.attachment("distributors.csv");
+      res.send(result);
+    } catch (err) {
+      console.error("Fetching CSV error:", err);
+      const status = err.status || 500;
+      res
+        .status(status)
+        .json({ message: err.message || "Internal server error" });
+    }
+  }
+);
+
+router.get(
+  "/download-recipients",
+  //authenticateJWT,
+  //authorizeRoles("admin"),
+  async (req, res) => {
+    try {
+      const result = await downloadRecipients(req.body);
+      res.header("Content-Type", "text/csv");
+      res.attachment("Recipients.csv");
+      res.send(result);
+    } catch (err) {
+      console.error("Fetching CSV error:", err);
+      const status = err.status || 500;
+      res
+        .status(status)
+        .json({ message: err.message || "Internal server error" });
     }
   }
 );

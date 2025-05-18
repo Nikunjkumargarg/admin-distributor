@@ -1,6 +1,9 @@
 const express = require("express");
 const { loginService } = require("../services/auth.service");
-const { verifyOtp } = require("../services/auth.service");
+const {
+  verifyOtpAdmin,
+  verifyOtpDistributor,
+} = require("../services/auth.service");
 const customerService = require("../services/customer.service");
 
 const router = express.Router();
@@ -21,8 +24,19 @@ router.post("/admin/login", async (req, res) => {
   }
 });
 
+router.post(
+  "/admin/send-otp",
+  (req, res, next) => {
+    req.body.type = "admin";
+    next();
+  },
+  customerService.sendOtp
+);
+
+router.post("/admin/verify-otp", verifyOtpAdmin);
+
 router.post("/distributor/send-otp", customerService.sendOtp);
 
-router.post("/distributor/verify-otp", verifyOtp);
+router.post("/distributor/verify-otp", verifyOtpDistributor);
 
 module.exports = router;

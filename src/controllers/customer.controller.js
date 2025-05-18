@@ -10,6 +10,10 @@ const customerService = require("../services/customer.service");
 // Send OTP
 router.post(
   "/send-otp",
+  (req, res, next) => {
+    req.body.type = "customer";
+    next();
+  },
   authenticateJWT,
   authorizeRoles("distributor"),
   customerService.sendOtp
@@ -28,8 +32,8 @@ router.post(
 
 router.get(
   "/list",
-  authenticateJWT,
-  authorizeRoles("admin"),
+  //authenticateJWT,
+  //authorizeRoles("admin"),
   customerService.customerslist
 );
 

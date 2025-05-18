@@ -7,8 +7,23 @@ const generateOTP = () =>
 
 exports.sendOtp = async (req, res) => {
   try {
-    const { mobile_number } = req.body;
+    const { mobile_number, type } = req.body;
     const cleanMobileNumber = mobile_number.replace(/[^\d+]/g, "");
+
+    //Step 1: Check if customer already exists
+    if (type === "customer") {
+      const existingCustomer = await db.query(
+        `SELECT id FROM customer WHERE mobile_number = $1`,
+        [mobile_number]
+      );
+
+      if (existingCustomer.rows.length > 0) {
+        return res
+          .status(400)
+          .json({ message: "Customer already exists with this mobile number" });
+      }
+    }
+
     const otp = generateOTP();
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
@@ -95,10 +110,17 @@ exports.createCustomer = async (req, res) => {
       `SELECT id FROM distributer WHERE mobile_number = $1`,
       [distributorMobileNumber]
     );
-    const distributorId = distributor.rows[0]?.id;
+    const distributorData = distributor.rows[0];
 
-    if (!distributorId) {
+    if (!distributorData) {
       return res.status(400).json({ message: "Distributor not found" });
+    }
+
+    // Step 4: Check if distributor has any quantity left
+    if (distributorData.allotted_quantity <= 0) {
+      return res
+        .status(400)
+        .json({ message: "No more quantity available for this distributor" });
     }
 
     const customer = await db.query(
@@ -109,7 +131,14 @@ exports.createCustomer = async (req, res) => {
 
     await db.query(
       `INSERT INTO sale (distributor_id, customer_id) VALUES ($1, $2)`,
-      [distributorId, customerId]
+      [distributorData.id, customerId]
+    );
+
+    await db.query(
+      `UPDATE distributer 
+       SET quantity_remaining = quantity_remaining - 1
+       WHERE id = $1`,
+      [distributorData.id]
     );
 
     res.json({ message: "Customer created and sale recorded successfully" });
@@ -121,14 +150,25 @@ exports.createCustomer = async (req, res) => {
 
 exports.customerslist = async (req, res) => {
   try {
-    const query = `
-      SELECT 
-  c.mobile_number AS customer_mobile,
-  d.mobile_number AS distributor_mobile
-FROM customer c
-JOIN sale s ON c.id = s.customer_id
-JOIN distributer d ON s.distributor_id = d.id;
-    `;
+    // const query = `
+    //   SELECT
+    // c.mobile_number AS customer_mobile,
+    // d.mobile_number AS distributor_mobile
+    // FROM customer c
+    // JOIN sale s ON c.id = s.customer_id
+    // JOIN distributer d ON s.distributor_id = d.id;
+    // `;
+
+    const query = `SELECT 
+    s.created_at AS date_time_received,
+    d.name AS ambassador_name,
+    d.mobile_number AS ambassador_phone,
+    c.name AS recipient_name,
+    c.mobile_number AS recipient_phone
+  FROM customer c
+  JOIN sale s ON c.id = s.customer_id
+  JOIN distributer d ON s.distributor_id = d.id
+  ORDER BY s.created_at DESC;`;
 
     const result = await await db.query(query); // 'pool.query()' executes the SQL query
     res.json(result.rows); // Send the result as a JSON response
