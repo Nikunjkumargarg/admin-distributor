@@ -5,6 +5,28 @@ const { Parser } = require("json2csv");
 const pool = require("../config/db");
 const { sendWelcomeEmail } = require("../config/email");
 
+function formatPhoneNumber(number) {
+  // Remove all non-digit characters just in case
+  number = number.replace(/\D/g, "");
+
+  // If it starts with '91' and length is more than 10, remove the prefix
+  if (number.startsWith("91") && number.length > 10) {
+    return number.slice(-10);
+  }
+
+  return number;
+}
+function formatPhoneNumber(number) {
+  // Remove all non-digit characters just in case
+  number = number.replace(/\D/g, "");
+
+  // If it starts with '91' and length is more than 10, remove the prefix
+  if (number.startsWith("91") && number.length > 10) {
+    return number.slice(-10);
+  }
+
+  return number;
+}
 async function handleDistributorCSVBuffer(buffer) {
   const distributors = [];
 
@@ -152,8 +174,8 @@ const generateRecipientsCSV = async () => {
   const recipients = result.rows.map((row) => ({
     ambassador_name: row.ambassador_name,
     recipient_name: row.recipient_name,
-    recipient_phone_number: row.recipient_phone,
-    ambassador_phone_number: row.ambassador_phone,
+    recipient_phone_number: formatPhoneNumber(row.recipient_phone),
+    ambassador_phone_number: formatPhoneNumber(row.ambassador_phone),
     date_time_assigned: new Date(row.date_time_received).toLocaleString(
       "en-IN",
       {
@@ -210,6 +232,13 @@ async function getAllDistributorsSummary() {
       FROM distributer d
       ORDER BY d.created_at DESC
     `);
+
+    console.log(result);
+
+    if (result)
+      result.rows.forEach((element) => {
+        element.mobile_number = formatPhoneNumber(element.mobile_number);
+      });
 
     return result.rows;
   } catch (err) {
