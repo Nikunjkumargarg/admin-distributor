@@ -84,6 +84,8 @@ async function verifyOtpDistributor(req, res) {
       { expiresIn: "7d" }
     );
 
+    console.log(token);
+
     // 5. Return token and role
     res.json({
       message: "OTP verified successfully",

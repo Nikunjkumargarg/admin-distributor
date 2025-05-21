@@ -247,10 +247,36 @@ async function getAllDistributorsSummary() {
   }
 }
 
+async function getADistributorSummary(distributorId) {
+  try {
+    const result = await pool.query(
+      `
+      SELECT 
+        id,
+        name,
+        mobile_number,
+        quantity_alloted,
+        quantity_remaining,
+        (quantity_alloted - quantity_remaining) AS units_sold
+      FROM distributer
+      WHERE id = $1
+      `,
+      [distributorId]
+    );
+
+    console.log(result);
+    return result.rows[0];
+  } catch (err) {
+    console.error("Error fetching distributor summary:", err);
+    return err;
+  }
+}
+
 module.exports = {
   handleDistributorCSVBuffer,
   createDistributor,
   downloadDistributors,
   getAllDistributorsSummary,
   downloadRecipients,
+  getADistributorSummary,
 };
