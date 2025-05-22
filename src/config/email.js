@@ -2,13 +2,13 @@ const nodemailer = require("nodemailer");
 console.log(process.env.EMAIL_USER);
 console.log(process.env.EMAIL_PASS);
 const transporter = nodemailer.createTransport({
-  host: "email-smtp.us-east-1.amazonaws.com",
+  host: "email-smtp.ap-south-1.amazonaws.com",
   port: 587, // ✅ use 587 for STARTTLS
   secure: false, // use TLS, not SSL
   auth: {
-    user: process.env.EMAIL_USER || "AKIAVRS56RTVDL4SFJLF", // AWS SMTP username
+    user: process.env.EMAIL_USER || "AKIAVRS56RTVHQ4VIYVM", // AWS SMTP username
     pass:
-      process.env.EMAIL_PASS || "BFRzTZ7vKdXx9s0cUe0sdBIDkpggNlJxzRxxDTKDIHR2", // AWS SMTP password
+      process.env.EMAIL_PASS || "BGHGrnA/7T+7Tr+BLlFQ2SpvGOi81cxz1eVAIb/GP7D8", // AWS SMTP password
   },
 });
 
