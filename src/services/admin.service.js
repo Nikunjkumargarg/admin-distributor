@@ -3,7 +3,6 @@ const csv = require("csv-parser");
 const bcrypt = require("bcrypt");
 const { Parser } = require("json2csv");
 const pool = require("../config/db");
-const { sendWelcomeEmail } = require("../config/email");
 
 function formatPhoneNumber(number) {
   // Remove all non-digit characters just in case

@@ -1,6 +1,5 @@
 const db = require("../config/db");
 const axios = require("axios");
-const { sendWelcomeEmail } = require("../config/email");
 
 const generateOTP = () =>
   Math.floor(100000 + Math.random() * 900000).toString();
