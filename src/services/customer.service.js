@@ -8,7 +8,7 @@ exports.sendOtp = async (req, res) => {
   try {
     const { mobile_number, type } = req.body;
     const cleanMobileNumber = mobile_number.replace(/[^\d+]/g, "");
-
+    console.log("userType", type);
     //Step 1: Check if customer already exists
     if (type === "customer") {
       const existingCustomer = await db.query(
@@ -17,9 +17,27 @@ exports.sendOtp = async (req, res) => {
       );
 
       if (existingCustomer.rows.length > 0) {
-        return res
-          .status(400)
-          .json({ message: "Customer already exists with this mobile number" });
+        return res.status(400).json({
+          message: "Recipient already exists with this mobile number",
+        });
+      }
+    }
+
+    if (type === "distributor" || type === "admin") {
+
+      let message =
+        type === "admin"
+          ? "Admin does not exist with this mobile number"
+          : "Ambassador does not exist with this mobile number";
+      const existingAmbassador = await db.query(
+        `SELECT id FROM distributer WHERE mobile_number = $1`,
+        [mobile_number]
+      );
+
+      if (existingAmbassador.rows.length === 0) {
+        return res.status(400).json({
+          message: message,
+        });
       }
     }
 

@@ -135,7 +135,7 @@ const generateDistributorsCSV = async () => {
   const distributors = result.rows.map((row) => ({
     name: row.name,
     email: row.email,
-    phone_number: row.phone_number,
+    phone_number: formatPhoneNumber(row.phone_number),
     date_time_assigned: new Date(row.created_at).toLocaleString("en-IN", {
       timeZone: "Asia/Kolkata",
     }),

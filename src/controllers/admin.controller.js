@@ -116,8 +116,8 @@ router.get(
 
 router.get(
   "/download-distributors",
-  //authenticateJWT,
-  //authorizeRoles("admin"),
+  authenticateJWT,
+  authorizeRoles("admin"),
   async (req, res) => {
     try {
       const result = await downloadDistributors(req.body);

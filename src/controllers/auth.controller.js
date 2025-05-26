@@ -35,7 +35,14 @@ router.post(
 
 router.post("/admin/verify-otp", verifyOtpAdmin);
 
-router.post("/distributor/send-otp", customerService.sendOtp);
+router.post(
+  "/distributor/send-otp",
+  (req, res, next) => {
+    req.body.type = "distributor";
+    next();
+  },
+  customerService.sendOtp
+);
 
 router.post("/distributor/verify-otp", verifyOtpDistributor);
 
